@@ -1,14 +1,12 @@
 # Quiz Game
 
-While there's "Game" in the name, it may be use to study as well.
+While this is called "QuizGame", it may be use as study cards with multiple choice answers.
 
 ### About
 
 - You may choose the amount of answers per questions.
-- You may add the question, the correct answers, then the other possible answers.
+- You may add the questions, the correct answers, and the other possible answers.
 - You may replay the game with the same questions, with the possibility of adding more.
-- Questions and Answers are shuffle each time.
-
-#### Future (maybe)
-
-- The posibility of saving the questions may or may not be added.
+- Questions and Answers are shuffled each time.
+- You may SAVE your questions for later use, or to share them.
+- You may LOAD a questionnaire to play.
