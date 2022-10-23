@@ -75,13 +75,9 @@ namespace binarytree
     1 -> derecha
     */
     template <typename T>
-    bool isNull(Node<T> *&node, int side)
+    bool isNull(Node<T> *&node, bool side)
     {
-        if (side == 1 && node->right ||
-            side == 0 && node->left)
-            return true;
-        return false;
-        // return side && node->right || !side && node->left;
+        return (side && isNull(node->right) || !side && isNull(node->left));
     }
 
     /*
@@ -91,11 +87,7 @@ namespace binarytree
     template <typename T>
     bool isLeaf(Node<T> *&node)
     {
-        if (!node->left &&
-            !node->right)
-            return true;
-        return false;
-        // return !node->left && !node->right;
+        return (isNull(node, 0) && isNull(node, 1));
     }
 
     /*
@@ -123,10 +115,10 @@ namespace binarytree
 
         while (!isLeaf(p))
         {
-            while (p->left != NULL && isGT(p->info, value))
+            while (!isNull(p, 0) && isGT(p->info, value))
                 p = goLeft(p);
 
-            if (p->right != NULL && !isGT(p->info, value))
+            if (!isNull(p, 1) && !isGT(p->info, value))
                 p = goRight(p);
             else
                 break;
@@ -146,7 +138,7 @@ namespace binarytree
     template <typename T>
     void print(Node<T> *node)
     {
-        if (node == NULL)
+        if (isNull(node))
             return;
 
         print(node->left);
@@ -160,7 +152,7 @@ namespace binarytree
     template <typename T>
     void printReversed(Node<T> *node)
     {
-        if (node == NULL)
+        if (isNull(node))
             return;
 
         printReversed(node->right);
@@ -174,7 +166,7 @@ namespace binarytree
     template <typename T>
     void printLeftToRight(Node<T> *node)
     {
-        if (node == NULL)
+        if (isNull(node))
             return;
 
         std::cout << node->info << " ";
@@ -188,7 +180,7 @@ namespace binarytree
     template <typename T>
     void printMostLeftFirstRight(Node<T> *node)
     {
-        if (node == NULL)
+        if (isNull(node))
             return;
 
         printMostLeftFirstRight(node->left);
@@ -214,7 +206,7 @@ namespace binarytree
     template <typename T>
     void _printLevel(Node<T> *node, int level)
     {
-        if (node == NULL)
+        if (isNull(node))
             return;
 
         if (level == 1)
@@ -229,7 +221,7 @@ namespace binarytree
         }
         else
         {
-            if (node->left == NULL)
+            if (isNull(node->left))
                 std::cout << "    ";
             _printLevel(node->left, level - 1);
             _printLevel(node->right, level - 1);
