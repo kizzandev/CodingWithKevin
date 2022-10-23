@@ -271,4 +271,21 @@ namespace binarytree
         printTreeH(node->left, level + 1);
     };
 
+    /*
+    searches value, returns boolean
+    */
+    template <typename T>
+    bool search(Node<T> *&node, T value)
+    {
+        if (isNull(node))
+            return false;
+
+        if (node->info == value ||
+            search(node->left, value) ||
+            search(node->right, value))
+            return true;
+
+        return false;
+    }
+
 } // namespace binarytree
