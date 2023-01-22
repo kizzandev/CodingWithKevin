@@ -14,17 +14,7 @@ That's right, no more "file exploring"... get cool, get the report!
 
 ---
 
-## Task
+## What it does
 
-Generates a report of the files in the directory path provided by the user.
-
-## Output
-
-It may be the console, PDF or CSV\
-You may choose the outcome/s by commenting and uncommenting in the main.py file
-
-## Why not let the user choose when running the program?
-
-The reason is: I do not expect people using this.
-
-
+- Generates a report of the files in the directory path provided by the user.
+- Choose type of report: CSV, PDF, or Console.

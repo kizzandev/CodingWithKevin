@@ -1,10 +1,10 @@
 """
-Task: Generate a report of the files in a directory.
+Task: Generating a report of the files in a directory.
 Steps:
     * Determine the directory that you want to generate the report for.
     * Get a list of all the files in the directory.
-    * For each file, determine the extension, size, creation date and modification date.
-    * Create a report with the file name, extension, size, creation date and modification date for each file.
+    * For each file, determine the size and modification date.
+    * Create a report with the file name, size, and modification date for each file.
 Tools and resources:
     * A programming language that can access the file system and read file properties -> Python.
     * A library or framework that can be used to generate a report in a desired format, such as CSV or PDF.
@@ -14,6 +14,7 @@ import os
 from tabulate import tabulate
 from datetime import datetime
 import csv
+import math
 
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet
@@ -24,14 +25,10 @@ def WhatDirectory() -> str:
     # Ask the user to enter the path of the directory
     directory = input("Enter the path of the directory: ")
 
-    # Validate the input to ensure it is a valid directory
-    if os.path.isdir(directory):
-      # If the directory is valid, return the path
-      return directory
-    else:
-      # If the directory is not valid, print an error message and ask the user to enter a valid directory
-      print("Error: Invalid directory. Please enter a valid directory.")
-      return WhatDirectory()
+    while not os.path.isdir(directory):
+        directory = input("Please enter a valid directory path: ")
+
+    return directory
 
 
 def GetListOfFiles(directory) -> list[str]:
@@ -55,10 +52,10 @@ def ForFileIn(files, data:list, directory:str) -> None:
 
             # Size of the dir
             file_size = 0
-            for root, dirs, files in os.walk(file_path):
-                for file in files:
-                    indir_file_path = os.path.join(root, file)
-                    file_size += os.path.getsize(indir_file_path)
+            for root, dirs, files_in_dir in os.walk(file_path):
+                for file_in_dir in files_in_dir:
+                    file_path_in_dir = os.path.join(root, file_in_dir)
+                    file_size += os.path.getsize(file_path_in_dir)
             
             # No extension then folder
             file_extension = 'FOLDER'
@@ -80,19 +77,11 @@ def ForFileIn(files, data:list, directory:str) -> None:
 
 
         # Determine the size unit (KB, MB, GB, etc.) based on the file size
-        if file_size < 1024:
-            file_size_unit = "bytes"
-        elif file_size < 1048576:
-            file_size_unit = "KB"
-            file_size = file_size / 1024
-        elif file_size < 1073741824:
-            file_size_unit = "MB"
-            file_size = file_size / 1048576
-        else:
-            file_size_unit = "GB"
-            file_size = file_size / 1073741824
-        
-        file_size = float(file_size)
+        order_of_magnitude = int(math.log(file_size, 1024)) if file_size > 0 else 0
+        size_units = {0: 'bytes', 1: 'KB', 2: 'MB', 3: 'GB'} # Easy to add more
+        file_size_unit = size_units[order_of_magnitude]
+
+        file_size = file_size / (1024 ** order_of_magnitude)
 
         # Add the file name, size, modification date, creation date, and file type to the data list
         data.append([file_name, file_extension, f"{file_size:.4} {file_size_unit}", file_created_date, file_modified_date])
@@ -139,6 +128,10 @@ def GenerateReportInPDF(directory:str, files:list[str]) -> None:
 
 
 def GenerateReportInCSV(directory:str, files:list[str]) -> None:
+    # Create a list to store the data for each file
+    data = []
+    ForFileIn(files, data, directory)
+
     # Create the CSV
     with open(f'{directory}/report.csv', 'w', newline='') as csvfile:
         # Create a CSV writer object
@@ -146,11 +139,6 @@ def GenerateReportInCSV(directory:str, files:list[str]) -> None:
 
         # Write the column headers
         writer.writerow(['Name', 'Extension', 'Size', 'Created', 'Modified'])
-
-        # Create a list to store the data for each file
-        data = []
-
-        ForFileIn(files, data, directory)
 
         # Write a row to the CSV file
         for file in data:
@@ -161,11 +149,27 @@ def GenerateReportInCSV(directory:str, files:list[str]) -> None:
 if __name__ == '__main__':
     # Get the directory
     directory = WhatDirectory()
-    # Confirmation of valid directory
-    print("Generating report for directory:", directory)
     # Get the files and folders
     files = GetListOfFiles(directory)
 
-    # GenerateReportInConsole(directory, files)  # console output
-    GenerateReportInPDF(directory, files)  # PDF output
-    GenerateReportInCSV(directory, files)  # CSV output
+    end_program = False
+
+    while not end_program:
+        action = input("Write 'csv', 'pdf', 'console', or 'exit' to generate the report or exit: ")
+        action = action.lower()
+
+        if action == 'csv':
+            # Confirmation of valid directory
+            print("Generating report for directory:", directory)
+            GenerateReportInCSV(directory, files)  # CSV output
+        elif action == 'pdf':
+            # Confirmation of valid directory
+            print("Generating report for directory:", directory)
+            GenerateReportInPDF(directory, files)  # PDF output
+        elif action == 'console':
+            # Confirmation of valid directory
+            print("Generating report for directory:", directory)
+            GenerateReportInConsole(directory, files)  # Console output
+        elif action == 'exit':
+            end_program = True
+
