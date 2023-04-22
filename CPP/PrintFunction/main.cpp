@@ -1,7 +1,5 @@
 #include "print.hpp"
 
-#include <string>
-
 class Test
 {
 public:
