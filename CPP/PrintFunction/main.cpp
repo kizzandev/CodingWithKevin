@@ -11,14 +11,14 @@ int main()
 {
     Test test;
 
-    print("Hello", " ", "World", "!"); // Hello World!
-    print("1 + 1 = ", 2);              // 1 + 1 = 2
-    print(test);                       // Test
-    print();                           // [empty line]
+    nstd::print("Hello", " ", "World", "!"); // Hello World!
+    nstd::print("1 + 1 = ", 2);              // 1 + 1 = 2
+    nstd::print(test);                       // Test
+    nstd::print();                           // [empty line]
 
-    print(format("There was a {} in the {}.", "lion", "cave")); // There was a lion in the cave.
-    print(format("{} + {} = {}", "1", "2", 3));                 // 1 + 2 = 3
+    nstd::print(nstd::format("There was a {} in the {}.", "lion", "cave")); // There was a lion in the cave.
+    nstd::print(nstd::format("{} + {} = {}", "1", "2", 3));                 // 1 + 2 = 3
 
-    print(format("{} {}", 1, 2, 3)); // 1 2
-    print(format("{} {}", 1));       // 1 {}
+    nstd::print(nstd::format("{} {}", 1, 2, 3)); // 1 2
+    nstd::print(nstd::format("{} {}", 1));       // 1 {}
 }
