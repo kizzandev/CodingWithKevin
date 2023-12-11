@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To Do</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      style="
+        margin-top: 40px;
+        max-width: 768px;
+        margin-inline: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        width: 100%;
+        padding: 0.5rem;
+      "
+    >
+      <h1>To Do List</h1>
+      <span role="form" style="display: flex; gap: 1rem">
+        <input
+          required
+          id="name"
+          placeholder="My task"
+          minlength="1"
+          min="1"
+          type="text"
+          style="padding: 0.5rem; width: 100%; max-width: 100%"
+          onkeydown="isEnter(this)"
+        />
+        <button onclick="handlePost()" style="padding: 0.5rem 1rem">Add</button>
+      </span>
+      <ul
+        id="ul"
+        style="
+          list-style: none;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          width: 100%;
+        "
+      ></ul>
+    </div>
+
+    <script>
+      async function handleUpdate(e, task) {
+        e.preventDefault();
+        task.done = !task.done;
+        fetch(`./tasks/${task.id}`, {
+          method: 'PUT',
+        }).then((res) => {
+          console.log(res);
+          if (res.status === 201 || res.status === 200) {
+            window.location.reload();
+          }
+        });
+      }
+
+      async function handleDelete(e, task) {
+        e.preventDefault();
+        task.done = !task.done;
+        fetch(`./tasks/${task.id}`, {
+          method: 'DELETE',
+        }).then((res) => {
+          console.log(res);
+          if (res.ok) {
+            window.location.reload();
+          }
+        });
+      }
+
+      const isEnter = (el) =>
+        event.key === 'Enter' ? handlePost() : undefined;
+
+      async function handlePost() {
+        const name_value = document.getElementById('name').value;
+        if (name_value.length < 2) return;
+
+        const task = {
+          id: -1,
+          name: name_value,
+          done: false,
+        };
+
+        fetch(`./tasks`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(task),
+        }).then((res) => {
+          console.log(res);
+          if (res.status === 201 || res.status === 200) {
+            window.location.reload();
+          }
+        });
+      }
+
+      async function getTasks() {
+        const ul = document.querySelector('#ul');
+        const tasks = (await (await fetch('./tasks')).json()).tasks;
+
+        tasks.forEach((task) => {
+          const li = document.createElement('li');
+          li.style.backgroundColor = 'lightgray';
+          li.style.display = 'flex';
+          li.style.alignItems = 'center';
+          li.style.justifyContent = 'space-between';
+          li.style.padding = '16px';
+          li.style.borderRadius = '4px';
+          // li.style.opacity = '.2';
+
+          const title = document.createElement('h3');
+          title.innerText = task.name;
+          li.append(title);
+
+          const span = document.createElement('span');
+          span.style.display = 'flex';
+          span.style.gap = '1rem';
+
+          let btn = document.createElement('button');
+          btn.type = 'button';
+          btn.checked = task.done;
+          btn.innerText = 'DONE';
+          btn.onclick = (e) => {
+            handleUpdate(e, task);
+          };
+          btn.style.marginLeft = 'auto';
+          btn.style.padding = '0.5rem 1rem';
+          btn.style.borderRadius = '4px';
+          btn.style.cursor = 'pointer';
+          if (btn.checked) {
+            li.style.opacity = '.4';
+          }
+          span.append(btn);
+
+          btn = document.createElement('button');
+          btn.type = 'button';
+          btn.checked = task.done;
+          btn.innerText = 'DELETE';
+          btn.onclick = (e) => {
+            handleDelete(e, task);
+          };
+          btn.style.marginLeft = 'auto';
+          btn.style.padding = '0.5rem 1rem';
+          btn.style.borderRadius = '4px';
+          btn.style.cursor = 'pointer';
+          if (btn.checked) {
+            li.style.opacity = '.4';
+          }
+          span.append(btn);
+
+          li.append(span);
+          ul.append(li);
+        });
+      }
+
+      getTasks();
+    </script>
+  </body>
+</html>
